@@ -22,7 +22,7 @@ other-links:
     icon: "house"
     target: "_blank"
   - text: "posit.cloud workspace"
-    href: "https://posit.cloud/spaces/583413"
+    href: "https://posit.cloud/spaces/646067"
     icon: "cloud"
     target: "_blank"
 number-sections: true

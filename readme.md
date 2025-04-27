@@ -4,9 +4,9 @@
 
 -   posit.cloud free account signup: [posit.cloud/plans/free](https://posit.cloud/plans/free)
 
--   Check your email for the private link to join the posit.cloud workspace for this workshop!
+-   Check your email/canvas for the private link to join the posit.cloud workspace for this workshop!
 
--   posit.cloud workspace [posit.cloud/spaces/583413](https://posit.cloud/spaces/583413)
+-   posit.cloud workspace [posit.cloud/spaces/646067](https://posit.cloud/spaces/646067)
 
 ## Slides
 
