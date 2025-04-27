@@ -51,8 +51,6 @@ These data have already been processed into a table: counts of how often each se
 
 It started as huge fastq text files, full of As, Cs, Ts and Gs, but we will not practice sequence data processing today, because it takes quite a long time to run.
 
-If you generate your data with us at Medical Microbiology, we will run the latest processing approaches on our computational infrastructure and provide you with the processed data.
-
 Nowadays, we do amplicon sequencing with Illumina MiSeq, HiSeq, or similar technologies, and denoise the output with DADA2 to produce ASV count tables.
 
 The example data we will use today are older. The amplicons were sequenced with "454 pyrosequencing" and clustered into OTUs, but the core principles of analysis remain the same.
