@@ -1,0 +1,733 @@
+---
+title: "Practical 1A - R fundamentals"
+subtitle: "MSP microbiome workshop"
+author: David Barnett
+date: last-modified
+format: html
+keep-md: false
+theme: 
+  light: flatly
+  dark: darkly
+css: ../.css/instructions.css
+embed-resources: true
+code-block-border-left: true
+code-block-bg: true
+fig-align: center
+toc: true
+toc-location: right
+toc-depth: 4
+toc-expand: 1
+other-links:
+  - text: "Workshop Overview"
+    href: "https://david-barnett.github.io/MSP-microbiome-workshop"
+    icon: "house"
+    target: "_blank"
+  - text: "posit.cloud workspace"
+    href: "https://posit.cloud/spaces/646067"
+    icon: "cloud"
+    target: "_blank"
+number-sections: true
+number-depth: 3
+fig-dpi: 200
+fig-width: 7.5
+fig-height: 5
+fig-responsive: true
+code-tools: true
+code-fold: false
+code-link: true
+lightbox: auto
+link-external-icon: true
+cache: true
+---
+
+## Introduction 👋
+
+### Learning goals 🧠
+
+-   Using Quarto
+-   Reading tabular data
+-   Inspecting data
+-   Joining data frames
+-   Mutating data frames
+
+### Getting started 🚀
+
+In this workshop we will use an online version of [RStudio](https://posit.co/download/rstudio-desktop/ "RStudio is an application where you write and run R code"){target="_blank"} - via [posit.cloud](https://posit.cloud/spaces/646067! "Posit Cloud provides a cloud server to run and share RStudio projects"){target="_blank"}
+
+1.  [Sign up for a free posit.cloud account](https://posit.cloud/spaces/646067!){target="_blank"}\
+    (use a GitHub or Google account if you already have one of these)
+
+2.  Check your email for a link to join the posit.cloud space for this course
+
+3.  Click on the **MSP-microbiome-workshop** project - this will start RStudio
+
+4.  Go to **Files** (look bottom right) \> click folder `practical-1` \> open file `practical-1A-notebook.qmd`
+
+### Using Quarto 📝
+
+We will write code and notes in [Quarto](https://r4ds.hadley.nz/quarto){target="_blank"} `.qmd` documents, e.g. `practical-1A-notebook.qmd`
+
+#### **Write some notes:**
+
+You can write normal text for notes, e.g. your intentions, hypotheses, observations, etc.
+
+To edit your Quarto notebooks in RStudio you can use "[Visual](https://quarto.org/docs/visual-editor/){target="_blank"}" editor mode, or the "Source" mode.
+
+*Toggle between modes at the top left. Visual editor is easier for beginners, but Source mode shows how the Quarto file truly looks (it only contains [markdown](https://quarto.org/docs/authoring/markdown-basics.html "Markdown is plain text, with special characters to indicate headings, bold text, links etc"){target="_blank"} text, but RStudio adds formatting in Visual mode).*
+
+#### **Write and run code:**
+
+You can write code and comments in "chunks" - like the one below.
+
+Run a chunk by clicking the green play button in the corner of the chunk
+
+```{r, eval=FALSE}
+# This is a comment, because it starts with the # symbol
+print("This line is code, try to run it!") 
+```
+
+Insert a code chunk with `Ctrl`+`Alt`+`I` (Windows) or `Cmd`+`Option`+`I` (Mac).
+
+```{r, eval=FALSE}
+# You can also run code with keyboard shortcuts!
+print("Run this one line with Ctrl + Enter, or Cmd + Enter on Mac")
+print("or run a whole chunk with Ctrl/Cmd + SHIFT + Enter")
+```
+
+You can run all previous chunks by clicking the other button in the corner of the chunk.
+
+## Load R packages 📦
+
+It is a good idea to load all the packages you need at the top of your notebook.
+
+```{r}
+# `readxl` is for reading data from Excel files
+library(readxl)
+```
+
+```{r}
+# `writexl` is for writing data to a new Excel file
+library(writexl) # we'll use this at the end
+```
+
+```{r}
+# the `here` package makes specifying file locations easier
+library(here)
+```
+
+```{r}
+# `tidyverse` is a collection of several packages 
+library(tidyverse) # (dplyr, ggplot2, and others)
+```
+
+## Reading data 📂 {#reading-data}
+
+How do we read a table of data from a file, e.g. an Excel file?
+
+```{r}
+# give your objects short but informative names!
+meta <- read_excel(path = here("data/papa2012/papa2012_metadata.xlsx"), na = "NA")
+meds <- read_excel(here("data/papa2012/papa2012_metadata.xlsx"), sheet = "treatment")
+```
+
+::: {#tip-paths .callout-tip collapse="false"}
+## Projects and portable file paths
+
+There are multiple ways to tell R where to find the data files for a project.
+
+::: panel-tabset
+#### Projects + relative paths
+
+👍 **The best way** 👍
+
+1.  For each data analysis project you do, create a separate folder for that project, and keep all relevant code and data inside that folder.
+
+2.  RStudio also offers additional convenient features for organisation with [RStudio Projects](https://r4ds.hadley.nz/workflow-scripts.html#rstudio-projects "Section of R for Data Science book introducing RStudio projects"){target="_blank"}!
+
+3.  Using the R package called `here` you can easily specify the location of your data using file paths relative to the project folder. The `here` package offers one important function, also called `here()`
+
+```{r}
+# this will work anywhere! (anywhere that the project folder is moved or copied)
+meta <- read_excel(path = here("data/papa2012/papa2012_metadata.xlsx"), na = "NA")
+```
+
+This is reliable and portable! 🤩 If you share the entire project folder with a collaborator (e.g. as a zip file or via github) then this code will work on their computer without needing any changes!
+
+#### Absolute paths
+
+😐 **Easy but limiting** 😐
+
+1.  An absolute path (also known as a full path) can be used to specify where a file is on your own computer.
+
+2.  This will work okay, but only if you never move your files, and never change computer...
+
+3.  Using absolute paths makes it **inconvenient** to share your project or work collaboratively. 🙁
+
+```{r, eval=FALSE}
+# this works on my machine, but it won't work anywhere else!
+meta <- read_excel(
+  path = "/Users/david/Documents/teaching/workshops/MSP-microbiome-workshop/data/papa2012/papa2012_metadata.xlsx", 
+  na = "NA"
+)
+```
+
+#### setwd + relative paths
+
+🤷 **Commonly used but still problematic** 🤷
+
+-   You can use paths relative to the *working directory* set with `setwd("/an/absolute/path/on/your/computer")`, BUT:
+
+1.  setwd still uses an absolute path, so it is still not portable!
+
+2.  setwd does not work in notebooks, which reset working directory every chunk
+
+3.  Prof. Jenny Bryan might set your computer on fire! 🖥️🔥 ([read why here](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/){target="_blank"})
+
+```{r, eval=FALSE}
+# this works on my machine, but it won't work anywhere else!
+setwd("/Users/david/Documents/teaching/workshops/MSP-microbiome-workshop")
+meta <- read_excel(path = "data/papa2012/papa2012_metadata.xlsx", na = "NA")
+```
+:::
+:::
+
+## Inspecting data {#inspecting-data}
+
+### Look at the tables 👀
+
+Start by printing the metadata data frame, like this:
+
+```{r}
+meta
+```
+
+::: {#tip-looking .callout-tip collapse="true"}
+#### What is (in) this object?
+
+::: panel-tabset
+##### dataframes & tibbles
+
+A dataframe is the standard class of object for holding rectangular data (tables) in your R environment.
+
+Columns of a dataframe can hold vectors of different classes, e.g. chr and int (characters and integers)
+
+(In contrast, a matrix can only hold one type of data!)
+
+```{r}
+example_df <- data.frame(alphabet = LETTERS, numbers = 1:26)
+```
+
+Try `View(example_df)` in the Console - but not in a Quarto doc chunk
+
+A tibble is just a dataframe, but with a concise print format, useful!
+
+```{r}
+example_tbl <- as_tibble(example_df)
+example_tbl
+```
+
+##### vector classes?
+
+Each column in a dataframe/tibble can be on of the following types of vector object
+
+-   **numeric**: real numbers, e.g., `c(7.5, -2.301, 0.666)`.
+-   **integer**: whole numbers, e.g., `c(9L, 4L, -123L)`.
+-   **logical**: Boolean values, e.g., `c(TRUE, FALSE)`.
+-   **character**: strings of text, e.g., `c("no", "yes", "unsure")`.
+-   **factor**: categories with fixed levels, e.g., `factor(c("no", "yes", "unsure"))`.
+
+```{r}
+table(meta$family_history, useNA = "ifany")
+```
+
+```{r}
+table(meta$age_years, useNA = "ifany")
+```
+:::
+:::
+
+### Summarise 📋
+
+You can count the number of times a category occurs, similar to the table function.
+
+```{r}
+meta %>% count(diagnosis)
+```
+
+Or count combinations of categories.
+
+```{r}
+meta %>% count(family_history, diagnosis)
+```
+
+Or compute other summary statistics.
+
+```{r}
+meta %>% summarise(age_mean = mean(age_years), age_sd = sd(age_years))
+```
+
+Or compute grouped summary statistics
+
+```{r}
+meta %>% summarise(age_mean = mean(age_years), age_sd = sd(age_years), .by = diagnosis)
+```
+
+### Visualise 📊
+
+R's base graphics can be used to quickly summarise data distributions.
+
+::: panel-tabset
+#### Histogram
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+meta$age_years %>% hist(breaks = 10, main = NULL, xlab = "Age")
+```
+
+#### Bar chart
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+meta$activity %>% table() %>% barplot(xlab = "Disease Activity")
+```
+:::
+
+ggplot2 is a popular and powerful plotting package.
+
+::: panel-tabset
+#### Histogram
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+ggplot(meta) +
+  geom_histogram(aes(age_years), binwidth = 1) +
+  facet_wrap(~case_control, ncol = 1) +
+  theme_minimal()
+```
+
+#### Bar chart
+
+```{r}
+#| fig-width: 8
+#| fig-height: 3
+ggplot(meta) +
+  geom_bar(aes(y = activity, fill = diagnosis)) +
+  theme_bw()
+```
+:::
+
+::: {#tip-ggsave .callout-tip collapse="true"}
+### `ggsave` to save your plots? 🦸📊💾
+
+-   Viewing your plots in RStudio is okay for practice
+-   But don't copy paste them to save them, as there is a much better way!
+
+```{r}
+# Assign your plot to an R object
+plot_practice_bars <- ggplot(meta) +
+  geom_bar(aes(y = activity, fill = diagnosis)) +
+  ggtitle("Practice bar chart") +
+  theme_bw()
+
+# create a folder for figures
+dir.create(here("practical-1/figs"))
+
+# Write the plot to a file, with ggsave
+ggsave(
+  plot = plot_practice_bars, 
+  filename = here("practical-1/figs/practice-barchart.png"),
+  width = 6, height = 3, units = "in", dpi = 300
+)
+```
+
+```{r, include=FALSE}
+unlink(here("practical-1/figs"), recursive = TRUE)
+```
+
+**Be sure to carefully adjust the sizing and resolution of your plots for your paper or presentation!**
+:::
+
+::: {#tip-fig-quarto .callout-tip collapse="true"}
+### Sizing plots in Quarto reports 📏📊📄
+
+-   Again, viewing your plots in the RStudio is only okay for practice.
+-   If you're using Quarto reports, you can specify figure size and resolution in each chunk
+
+e.g.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+#| echo: fenced
+
+ggplot(meta) +
+  geom_bar(aes(y = activity, fill = diagnosis)) +
+  ggtitle("Practice bar chart") +
+  theme_bw()
+```
+:::
+
+::: {#tip-ggplot .callout-tip collapse="true"}
+## Become a ggplot2 wizard 🧙
+
+We will use ggplot2 throughout much of this workshop.
+
+It is a powerful and flexible tool, but it takes practice to learn the details.
+
+::: panel-tabset
+#### Resources
+
+Links to good resources for learning ggplot2
+
+-   [R 4 Data Science book](https://r4ds.hadley.nz/visualize.html){target="_blank"} - intro to plots in R
+
+-   [R Graphics Cookbook](https://r-graphics.org/){target="_blank"} - quick practical guide
+
+-   [R graph gallery](https://r-graph-gallery.com/){target="_blank"} - ideas and example code
+
+-   [ggplot2 website](https://ggplot2.tidyverse.org/reference/index.html){target="_blank"} - a reference manual
+
+-   [ggplot2 book](https://ggplot2-book.org/){target="_blank"} - for a thorough grounding
+
+-   [Cedric Scherer's blog](https://www.cedricscherer.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/){target="_blank"} - tutorial/examples
+
+-   [Metaprogramming, Advanced R](https://adv-r.hadley.nz/metaprogramming.html){target="_blank"} - experts only 🤯
+
+#### Example
+
+```{r}
+#| code-fold: true
+#| warning: false
+#| fig-width: 8
+#| fig-height: 6
+library(patchwork)
+
+plot_list <- list()
+
+# age boxplot
+plot_list$box <- meta %>%
+  ggplot(aes(y = case_control, x = age_years)) +
+  geom_boxplot(
+    mapping = aes(fill = case_control),
+    width = 0.15, staplewidth = 0.5, outliers = FALSE,
+    position = position_nudge(y = 0.2),
+    show.legend = FALSE
+  ) +
+  geom_jitter(height = 0.05, width = 0.1, alpha = 0.8, size = 1) +
+  labs(y = NULL, x = "Age (years)", title = "Age Distributions") +
+  theme_bw() +
+  theme(plot.margin = margin(b = 20, r = 20))
+
+# plot_list$box
+
+# family history piechart
+plot_list$pie <- meta %>%
+  ggplot(aes(y = 1, fill = family_history)) +
+  geom_bar(position = "stack", colour = "black") +
+  scale_fill_manual(
+    values = c(fhx = "grey30", nofhx = "grey70"),
+    na.value = "white", guide = "none"
+  ) +
+  annotate("text", x = I(pi / 8), y = I(0.25), label = "NA") +
+  annotate("text", x = I(0.9 * pi), y = I(0.25), label = "No FHx") +
+  annotate("text", x = I(1.7 * pi), y = I(0.25), label = "FHx", colour = "white") +
+  labs(tag = "Family History") +
+  labs(x = NULL, y = NULL) +
+  coord_radial(expand = FALSE, inner.radius = 0.3) +
+  theme_void() +
+  theme(plot.tag.location = "panel", plot.margin = margin(t = 10))
+
+# plot_list$pie
+
+# activity barchart
+plot_list$bar <- meta %>%
+  ggplot(aes(
+    x = diagnosis,
+    fill = factor(activity, c("severe", "moderate", "mild", "inactive"))
+  )) +
+  geom_bar(colour = "black", linewidth = 0.2) +
+  scale_x_discrete(limits = c("UC", "CD")) +
+  scale_fill_brewer(name = "Activity", palette = "Reds", direction = -1) +
+  labs(title = "Activity Level", x = NULL, y = NULL) +
+  coord_cartesian(ylim = c(0, NA), expand = FALSE) +
+  theme_classic() +
+  theme(
+    plot.margin = margin(l = 20),
+    legend.key.height = unit(1, "cm"), legend.key.width = unit(3, "mm")
+  )
+
+# plot_list$bar
+
+# assemble with patchwork
+wrap_plots(
+  A = plot_list$box, C = plot_list$bar,
+  B = plot_list$pie, guides = "collect",
+  design =
+    "AAC
+ AAC
+ BBC
+ BBC
+ BBC"
+)
+```
+:::
+:::
+
+## Joining data 🟧+️🟪 {#joining-dataframes}
+
+Often, your data are not all in one table. For example, there were two sheets of data in the metadata Excel file, which we stored in the dataframe objects `meta` and `meds`
+
+::: panel-tabset
+#### **meta**
+
+The main dataframe `meta` contains most of the data about each patient:
+
+```{r}
+meta
+```
+
+#### **meds**
+
+The second dataframe `meds` contains medications info for the IBD cases:
+
+```{r}
+meds
+```
+:::
+
+`dplyr` provides functions to "join" dataframes together, using shared variables.
+
+```{r}
+all_meta <- left_join(meta, meds)
+```
+
+By default the join function will perform a "natural" join using all shared variables. For greater control you can specify a "key" variable, or set of variables, that should be used.
+
+```{r}
+# this should do the same thing as the natural join shown above
+all_meta <- left_join(meta, meds, by = join_by(ID, diagnosis))
+```
+
+What happened with the Control group? (remember they were not present in `meds`!)
+
+Inspect the `all_meta` dataframe to find out! e.g. `View(all_meta)`
+
+::: {#tip-joins .callout-tip collapse="true"}
+## Learn the ways of the join 🪄
+
+A natural left join is the most common join you will need.
+
+![](https://r4ds.hadley.nz/diagrams/join/left.png){width="500"}
+
+But there are many other useful possibilities, e.g.
+
+![](https://r4ds.hadley.nz/diagrams/join/venn.png){width="500"}
+
+Learn more at:
+
+-   This R4DS [online book chapter](https://r4ds.hadley.nz/joins){target="_blank"}
+-   This dplyr [website article](https://dplyr.tidyverse.org/articles/two-table.html){target="_blank"}
+:::
+
+## Mutating data 🧬? {#mutating-data}
+
+Often, you need to modify your variables, or create new ones.
+
+### Modify and assign
+
+1.  Apply a function/transformation to an existing variable (or multiple variables).
+2.  Assign the result to a new variable, or overwrite the original variable.
+
+::: panel-tabset
+#### Base R 🤖
+
+For simple transformations you can easily do this with base R.
+
+```{r}
+# create a logical variable, TRUE if patient has family history of IBD
+all_meta$ibd_fhx <- all_meta$family_history == "fhx"
+
+# always check the result is what you expected!
+all_meta[, c("ID", "family_history", "ibd_fhx")]
+```
+
+#### dplyr::mutate 👽
+
+The `mutate` function from dplyr is great for making multiple or complex transformations. You refer to variables without repeating the name of the dataframe. It is as if you are working "inside" the dataframe.
+
+```{r}
+# this is equivalent to the previous block
+all_meta <- all_meta %>% mutate(ibd_fhx = family_history == "fhx")
+
+# check the result again
+all_meta %>% select(ID, family_history, ibd_fhx)
+```
+:::
+
+### Temporary or persistent?
+
+We can convert character string variables to factor variables to specify an ordering of their levels (e.g. for plotting).
+
+::: panel-tabset
+#### Temporary ⚡
+
+You can temporarily mutate a dataframe and use the result. This is easy with pipes.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+
+all_meta %>%
+  mutate(diagnosis = factor(diagnosis, levels = c("CD", "UC", "Other"))) %>%
+  ggplot(aes(diagnosis, age_years)) +
+  geom_boxplot()
+```
+
+Notice this did NOT persistently modify the diagnosis variable, it is still "character" class.
+
+```{r}
+class(all_meta$diagnosis) # no persistent changes, diagnosis is still character!
+```
+
+#### Persistent 🪨
+
+`mutate` returns a modified dataframe and you must assign this to an object for changes to persist.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+all_meta <- all_meta %>% mutate(diagnosis = factor(diagnosis, c("CD", "UC", "Other")))
+all_meta %>% ggplot(aes(diagnosis, age_years)) +
+  geom_boxplot()
+```
+
+```{r}
+class(all_meta$diagnosis)
+```
+:::
+
+### More mutation
+
+We need to clean up the medication history.
+
+```{r}
+table(all_meta$medication, useNA = "if")
+table(all_meta$immunosuppression_level, useNA = "if")
+```
+
+We have NAs for the medication for all the Controls. We know they had "none", so let's first indicate that. We will also replace Controls' immunosuppression_level NA values with "none".
+
+```{r}
+all_meta <- all_meta %>% mutate(
+  medication = if_else(case_control == "Control", true = "none", false = medication),
+  immunosuppression_level = if_else(case_control == "Control", true = "none", false = immunosuppression_level)
+)
+
+# check the result!
+all_meta %>% select(ID, case_control, medication, immunosuppression_level)
+```
+
+We now want logical variables indicating if the patient recently had antibiotics (abx), steroids, or other immunosuppressive drugs (imsp).
+
+```{r}
+all_meta <- all_meta %>% mutate(
+  abx = str_detect(medication, "abx"),
+  steroids = str_detect(medication, "steroids"),
+  imsp_other = str_detect(medication, "imsp"),
+  imsp_any = steroids | imsp_other
+)
+
+# check the result!
+# all_meta %>% select(case_control, medication, abx, steroids, imsp_other, imsp_any)
+```
+
+For the character variables with more than two values, we can convert them to factors, to encode our preferred ordering of their levels.
+
+In R stats methods, the 1st level of a factor is often used as the reference level by default. So we should keep this in mind, and typically set control levels as the 1st factor level. We can always temporarily change this for plots.
+
+```{r}
+all_meta <- all_meta %>% mutate(
+  diagnosis = factor(diagnosis, c("Other", "CD", "UC")),
+  active = factor(active, c("control", "inactive", "active")),
+  activity = factor(activity, c("control", "inactive", "mild", "moderate", "severe"))
+)
+```
+
+Now you do the same for `immunosuppression_level`! Don't forget to check the result
+
+::: {.callout-tip collapse="true"}
+#### Click for solution
+
+```{r}
+all_meta <- all_meta %>% mutate(
+  immunosuppression_level = factor(x = immunosuppression_level, c(
+    "none", "level0", "level1", "level2", "level3", "level4"
+  ))
+)
+```
+
+```{r}
+all_meta %>% select(diagnosis, activity, immunosuppression_level)
+```
+:::
+
+## Save your progress 💾
+
+Let's save the `all_meta` dataframe in three formats: Excel, CSV, and RDS, all within a folder called "processed" inside the "data" folder.
+
+First, we'll create the "processed" directory.
+
+```{r}
+output_path <- here("data", "papa2012", "processed")
+dir.create(output_path)
+```
+
+Then we write an excel file, using the `write_xlsx` function from the `writexl` package.
+
+```{r}
+write_xlsx(all_meta, here(output_path, "all_metadata.xlsx"))
+```
+
+CSV files are a common format for storing tabular data. We use the `write_csv` function from the `readr` package.
+
+```{r}
+write_csv(all_meta, here(output_path, "all_metadata.csv"))
+```
+
+RDS files are R's native format for saving single R objects. They preserve data types and structures, making them ideal for saving and loading a variety of R objects.
+
+```{r}
+saveRDS(all_meta, here(output_path, "all_metadata.rds"))
+```
+
+```{r}
+#| include: false
+# these files can be used if participants fail to replicate processing
+dir.create(here(output_path, "backup"))
+write_csv(all_meta, here(output_path, "backup", "all_metadata.csv"))
+write_xlsx(all_meta, here(output_path, "backup", "all_metadata.xlsx"))
+saveRDS(all_meta, file = here(output_path, "backup", "all_metadata.rds"))
+```
+
+## Next! ⏩
+
+-   We have recapped some R fundamentals and introduced the sample metadata.
+
+-   Next we will start working with microbiome data!
+
+-   Click here: <https://david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1B-instructions.html>
+
+## Session info
+
+For reproducibility, it is useful to record the packages and versions used in your analyses. This is easy to do with `sessioninfo::session_info()`.
+
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>

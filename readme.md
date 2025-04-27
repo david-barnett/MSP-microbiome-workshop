@@ -19,13 +19,13 @@ Start with practical 1 - part A - click the link and follow the instructions.
 
 ### Practical 1
 
--   **Instructions - Part A:** [david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1A-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1A-instructions.html)
+-   **Instructions - Part A:** [david-barnett.github.io/MSP-microbiome-workshop/web/practical1A-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/web/practical1A-instructions.html)
 
--   **Instructions - Part B:** [david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1B-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1B-instructions.html)
+-   **Instructions - Part B:** [david-barnett.github.io/MSP-microbiome-workshop/web/practical1B-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/web/practical1B-instructions.html)
 
 ### Practical 2
 
--   **Instructions:** [david-barnett.github.io/MSP-microbiome-workshop/practical-2/web/practical2-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/practical-2/web/practical2-instructions.html)
+-   **Instructions:** [david-barnett.github.io/MSP-microbiome-workshop/web/practical2-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/web/practical2-instructions.html)
 
 # Other links
 
