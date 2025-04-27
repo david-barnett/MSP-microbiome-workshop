@@ -1,0 +1,5 @@
+*.rds
+*.csv
+*.xlsx
+!processed/backup/*
+!papa2012_metadata.xlsx

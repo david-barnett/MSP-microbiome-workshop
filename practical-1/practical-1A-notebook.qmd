@@ -1,0 +1,272 @@
+---
+title: "Practical 1A - R fundamentals"
+subtitle: "MSP microbiome workshop"
+author: YOUR-NAME
+date: last-modified
+keep-md: false
+embed-resources: true
+format: html
+theme: flatly
+toc: true
+---
+
+## Instructions?
+
+Follow the instructions online at:\
+[david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1A-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1A-instructions.html)
+
+Some of the code and notes in this notebook are completed for you. The rest you will need to complete by following the the instructions.
+
+-   Keep your notes and code in this document.
+
+-   Check everything runs in order.
+
+-   Take your time to understand each step.
+
+-   Ask for help if confused.
+
+### Using Quarto 📝
+
+We will write code and notes in [Quarto](https://r4ds.hadley.nz/quarto){target="_blank"} `.qmd` documents, e.g. `practical-1A-notebook.qmd`
+
+#### **Write some notes:**
+
+You can write normal text for notes, e.g. your intentions, hypotheses, observations, etc.
+
+To edit your Quarto notebooks in RStudio you can use "[Visual](https://quarto.org/docs/visual-editor/){target="_blank"}" editor mode, or the "Source" mode.
+
+*Toggle between modes at the top left. Visual editor is easier for beginners, but Source mode shows how the Quarto file truly looks (it only contains [markdown](https://quarto.org/docs/authoring/markdown-basics.html "Markdown is plain text, with special characters to indicate headings, bold text, links etc"){target="_blank"} text, but RStudio adds formatting in Visual mode).*
+
+#### **Write and run code:**
+
+You can write code and comments in "chunks" - like the one below.
+
+Run a chunk by clicking the green play button in the corner of the chunk
+
+```{r}
+# This is a comment, because it starts with the # symbol
+print("This line is code, try to run it!") 
+```
+
+Insert a code chunk with `Ctrl`+`Alt`+`I` (Windows) or `Cmd`+`Option`+`I` (Mac).
+
+```{r}
+# You can also run code with keyboard shortcuts!
+print("Run this one line with Ctrl + Enter, or Cmd + Enter on Mac")
+print("or run a whole chunk with Ctrl/Cmd + SHIFT + Enter")
+```
+
+You can run all previous chunks by clicking the other button in the corner of the chunk.
+
+## Load R packages 📦
+
+Load all the required R packages.
+
+```{r}
+
+```
+
+## Reading data 📂
+
+Read metadata table from Excel file
+
+```{r}
+# give your objects short but informative names!
+meta <- read_excel(path = here("data/papa2012/papa2012_metadata.xlsx"), na = "NA")
+meds <- read_excel(here("data/papa2012/papa2012_metadata.xlsx"), sheet = "treatment") 
+```
+
+## Inspecting data
+
+### Look at the tables 👀
+
+Look at the metadata.
+
+```{r}
+
+```
+
+### Summarise 📋
+
+Check number of participants per diagnosis group.
+
+```{r}
+meta %>% count(diagnosis)
+```
+
+Check other category counts.
+
+```{r}
+
+```
+
+Compute other summary statistics.
+
+```{r}
+meta %>% summarise(age_mean = mean(age_years), age_sd = sd(age_years))
+```
+
+Compute grouped summary statistics
+
+```{r}
+
+```
+
+### Visualise 📊
+
+Plot age histogram with base R
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+meta$age_years %>% hist(breaks = 10, main = NULL, xlab = "Age")
+```
+
+Plot activity level bar chart with base R
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+meta$activity %>% table() %>% barplot(xlab = "Disease Activity")
+```
+
+Plot age histogram with ggplot2
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+ggplot(meta) +
+  geom_histogram(aes(age_years), binwidth = 1) +
+  facet_wrap(~case_control, ncol = 1) +
+  theme_minimal()
+```
+
+Plot activity level bar chart with ggplot2
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+
+
+```
+
+## Joining data 🟧+️🟪
+
+Join the main dataframe `meta` (containing most of the data about each patient) to the other dataframe `meds` (containing medications info for the IBD cases).
+
+```{r}
+all_meta <- left_join(meta, meds, by = 
+```
+
+Inspect the `all_meta` dataframe with `View(all_meta)`
+
+## Mutating data 🧬
+
+Data processing - modify variables and create new variables.
+
+#### Base R 🤖
+
+```{r}
+
+```
+
+#### dplyr::mutate 👽
+
+```{r}
+
+```
+
+### Temporary mutation and plot
+
+Temporarily mutate a dataframe and pipe the result into a plotting function.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+all_meta %>% 
+  mutate(diagnosis = factor(diagnosis, levels = c("CD", "UC", "Other"))) %>% 
+  ggplot(aes(diagnosis, age_years)) + geom_boxplot()
+```
+
+Check this did NOT persistently modify the diagnosis variable, it is still "character" class.
+
+```{r}
+class(all_meta$diagnosis) # no persistent changes, diagnosis is still character!
+```
+
+`mutate` dataframe and assign result to an object to persist the changes.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+all_meta <- all_meta %>% mutate(diagnosis = factor(diagnosis, c("CD", "UC", "Other")))
+all_meta %>% ggplot(aes(diagnosis, age_years)) + geom_boxplot()
+```
+
+```{r}
+class(all_meta$diagnosis) 
+```
+
+### More mutation
+
+Clean up the medication history.
+
+```{r}
+table(all_meta$immunosuppression_level, useNA = "if")
+```
+
+```{r}
+table(all_meta$medication, useNA = "if")
+```
+
+We have NAs for the medication for all the Controls. We know they had "none", so let's first indicate that. We will also replace Controls' immunosuppression_level NA values with "none".
+
+```{r}
+
+```
+
+We now want logical variables indicating if the patient recently had antibiotics (abx), steroids, or other immunosuppressive drugs (imsp).
+
+```{r}
+
+```
+
+For the character variables with more than two values, we convert them to factors, to encode our preferred ordering of their levels.
+
+```{r}
+
+```
+
+## Save progress 💾
+
+Save the `all_meta` dataframe in three formats: Excel, CSV, and RDS, all within a folder called "processed" inside the "data" folder.
+
+First, create the "processed" directory.
+
+```{r}
+
+```
+
+Write an excel file.
+
+```{r}
+
+```
+
+Write a CSV file.
+
+```{r}
+
+```
+
+Write an RDS file.
+
+```{r}
+
+```
+
+## Session info
+
+```{r}
+sessioninfo::session_info()
+```
