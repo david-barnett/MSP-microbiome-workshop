@@ -718,7 +718,7 @@ saveRDS(all_meta, file = here(output_path, "backup", "all_metadata.rds"))
 
 -   Next we will start working with microbiome data!
 
--   Click here: <https://david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1B-instructions.html>
+-   Click here: <https://david-barnett.github.io/MSP-microbiome-workshop/web/practical1B-instructions.html>
 
 ## Session info
 
