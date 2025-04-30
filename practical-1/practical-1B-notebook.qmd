@@ -13,7 +13,7 @@ toc: true
 ## Instructions
 
 Follow the instructions online at:\
-[david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1B-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/practical-1/web/practical1B-instructions.html)
+[david-barnett.github.io/MSP-microbiome-workshop/web/practical1B-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/web/practical1B-instructions.html)
 
 Some of the code and notes in this notebook are completed for you.
 

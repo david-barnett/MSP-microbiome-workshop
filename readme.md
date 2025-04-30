@@ -11,7 +11,7 @@
 ## Slides
 
 -   [Lecture 1 - 16S Data and Analysis Intro](https://docs.google.com/presentation/d/1eZG2vYeadTw0OY17EH1vMwn6DpVifBB1mVCLPcVFcpU/edit?usp=sharing)
--   [Lecture 2 - More Microbiome Analyses]()
+-   [Lecture 2 - More Microbiome Analyses](https://docs.google.com/presentation/d/11BjGzp1iB0-d7zd2j1c6vgggLSXgqjXIC3Npo61ofsA/edit?usp=sharing)
 
 ## Practical Instructions
 

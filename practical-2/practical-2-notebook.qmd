@@ -13,7 +13,7 @@ toc: true
 ## Instructions for practical 2
 
 Follow the instructions online at:\
-[david-barnett.github.io/MSP-microbiome-workshop/practical-2/web/practical2-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/practical-2/web/practical2-instructions.html)
+[david-barnett.github.io/MSP-microbiome-workshop/web/practical2-instructions.html](https://david-barnett.github.io/MSP-microbiome-workshop/web/practical2-instructions.html)
 
 For practical 2, you will need to fill out this notebook by copying and modifying the instruction material.
 
